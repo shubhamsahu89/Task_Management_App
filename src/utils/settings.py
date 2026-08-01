@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     SECRET_KEY:str
     ALGORITHM:str
     EXP_TIME:int
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
 
 
 settings=Settings()
