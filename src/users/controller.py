@@ -9,6 +9,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pwdlib import PasswordHash
 from src.utils.settings import settings
 from datetime import datetime,timedelta,timezone
+from src.utils.mail import send_email
 # from src.utils.db import get_db
 password_hash = PasswordHash.recommended()
 EXP_TIME=30
@@ -18,7 +19,7 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return password_hash.verify(plain_password, hashed_password)
 
-def register(body:UserSchema,db:Session):
+async def register(body:UserSchema,db:Session):
     is_user=db.query(UserModel).filter(UserModel.username==body.username).first()
     if is_user:
         raise HTTPException(400,detail="User already exists")
@@ -39,6 +40,10 @@ def register(body:UserSchema,db:Session):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    #send email
+    res =await send_email([new_user.email])
+    print(res)
 
     return new_user
 
